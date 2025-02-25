@@ -1,4 +1,32 @@
-	==================================================
+Docker is an open-source platform that allows you to build, ship, and run applications in containers. Containers are lightweight, portable, and isolated environments that include everything needed to run an application—code, runtime, libraries, and dependencies.
+
+Key Features of Docker
+Containerization: Packages applications and dependencies together to run consistently across different environments.
+
+Portability: Runs on any system with Docker installed, whether it's a developer’s laptop, a testing server, or a production cloud environment.
+
+Isolation: Each container runs independently, preventing conflicts between applications.
+
+Scalability: Easily scales applications by running multiple containers.
+
+Efficiency: Uses fewer resources than traditional virtual machines (VMs) because containers share the host OS.
+
+Docker shares the kernel of the host machine. Unlike virtual machines (VMs), which include a full guest OS, Docker containers run directly on the host’s OS kernel, making them lightweight and efficient.
+
+If the host machine is Windows-based and you want to run Linux-based containers, Docker does not share the Windows kernel directly with the Linux containers. Instead, it runs a lightweight Linux virtual machine (VM) in the background to provide a Linux kernel.
+
+
+
+How Docker Works
+
+Docker file: Defines how to build an image (like a blueprint).
+
+Docker Image: A snapshot of an application with its dependencies.
+
+Docker Container: A running instance of an image.
+
+Docker Hub: A repository for sharing and storing Docker images.
+==================================================
 CREATING AND USING DOCKER CONTAINERS		||
 ==================================================
 
@@ -81,6 +109,9 @@ image tags example :- latest(default) ,11.1.1 , mainframe
 ===========================================================================
 IMAGE LAYERS 								||
 ===========================================================================
+
+Docker uses a layered filesystem to optimize storage and build efficiency. Each instruction in a Dockerfile creates a new layer, which is cached and reused to speed up builds.
+
 In Docker, an image is built using multiple layers. These layers help save storage, improve efficiency, and speed up builds
 
 Each Docker image consists of stacked, read-only layers.
@@ -108,20 +139,25 @@ docker image build -t nginx-with-html . = build an image using docker file (.) i
 
 docker container run -p 80:80 -rm nginx-with-html = create a container with custom image 
 
+you can name a Dockerfile anything you want, but the default name is Dockerfile (without any extension). If you name it something else, you must specify the filename when building the image using the -f flag. For example:
+
+docker build -t my-image -f MyCustomDockerfile .
+
 =========================================
 EXAMPLE DOCKERFILE			||
 =========================================
-FROM openjdk:21-jdk			||
+FROM openjdk:21-jdk			||------------------> base image
 
-WORKDIR /javaapp			||
+WORKDIR /javaapp			||------------------> working directory where every process will happen 
 
-EXPOSE 8080				||
+EXPOSE 8080				||------------------> exposing the port where people can connect to 
 
-COPY HelloWorld.java HelloWorld.java	||
+COPY HelloWorld.java HelloWorld.java	|| -----------------> copy the code from local to the image
 
-RUN javac HelloWorld.java		||
+RUN javac HelloWorld.java		||------------------> compile the code 
 
-CMD ["java" , "HelloWorld.java"] 	||
+CMD ["java" , "HelloWorld.java"] 	||------------------> there can only be one command per container 
+
 =========================================
 
 ========================================================================================================================================================================================
@@ -144,6 +180,17 @@ sudo docker run -it -v volumename:/dirloc --name my-container-01 ubuntu
 UNMOUNTING IS NOT POSSIBLE YOU HAVE TO DELETE THE CONTAINER AND RECREATE IT 
 
 
+To mount a volume with the docker run command, you can use either the --mount or --volume flag.
+
+
+ docker run --mount type=volume,src=<volume-name>,dst=<mount-path>
+ docker run --volume <volume-name>:<mount-path>
+In general, --mount is preferred. The main difference is that the --mount flag is more explicit and supports all the available options.
+
+You must use --mount if you want to:
+
+Specify volume driver options	
+Mount a volume subdirectory
 
 
 
@@ -153,13 +200,22 @@ UNMOUNTING IS NOT POSSIBLE YOU HAVE TO DELETE THE CONTAINER AND RECREATE IT
 
 
 
+docker installation ubuntu :-
+
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/nullsudo apt-get update
 
 
 
 
 
-
-
-
+.dockerignore= use these files to ignore the file you dont want from your project to be copied while building docker image 
 
 		

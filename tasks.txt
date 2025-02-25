@@ -1,0 +1,18 @@
+git hub cherrypick 
+
+git pull vs git fetch 
+git stash 
+
+
+
+packer
+
+terraform - ec2 vm , vpc , public and private subnet , s3 bucket , loadbalancer 
+		 
+http-https (what is difference what are certificates port numbers) 
+
+ema application deploy 
+
+elastic search 
+
+
