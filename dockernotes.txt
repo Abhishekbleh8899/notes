@@ -1,4 +1,10 @@
-Docker is an open-source platform that allows you to build, ship, and run applications in containers. Containers are lightweight, portable, and isolated environments that include everything needed to run an application—code, runtime, libraries, and dependencies.
+using docker applications can run the same way one every machine 
+
+Docker is an open-source platform that allows you to build, ship, and run applications in containers.
+Containers are lightweight, portable, and isolated environments that include everything needed to run an application—code, runtime, libraries, and dependencies.
+
+docker container is a package of code , dependencies , libraries required for your application to run 
+
 
 Key Features of Docker
 Containerization: Packages applications and dependencies together to run consistently across different environments.
@@ -16,9 +22,9 @@ Docker shares the kernel of the host machine. Unlike virtual machines (VMs), whi
 If the host machine is Windows-based and you want to run Linux-based containers, Docker does not share the Windows kernel directly with the Linux containers. Instead, it runs a lightweight Linux virtual machine (VM) in the background to provide a Linux kernel.
 
 
-
+========================
 How Docker Works
-
+========================
 Docker file: Defines how to build an image (like a blueprint).
 
 Docker Image: A snapshot of an application with its dependencies.
@@ -68,14 +74,27 @@ Used by default when running a container without specifying a network.
 Allows containers to communicate only if they are on the same bridge network.
 The host cannot directly access containers.
 
+example:docker network create my-bridge-network
+docker run -d --name app1 --network my-bridge-network nginx
+docker run -d --name app2 --network my-bridge-network alpine ping app1
+
+
 2) HOST 
 it gains performance by skipping virtual network but sacrifices the security of the container model 
 the container on the host network are directly attached to the host interface 
+
+Removes network isolation—container shares the host’s IP.
+
+example:docker run --rm --network host nginx
+
 
 3) NONE
 Completely isolates the container from networking.
 Useful for security or debugging purposes.
 The container cannot connect to other containers, the host, or the internet.
+
+example :docker run --rm --network none nginx
+
 
 ==========================================================================
 DOCKER DNS								||
@@ -193,8 +212,21 @@ Specify volume driver options
 Mount a volume subdirectory
 
 
+=========================
+Docker in Docker (DinD)
+=========================
 
+Docker in Docker (DinD) refers to running a Docker daemon inside a Docker container. This setup allows you to build, run, and manage containers inside another container.
 
+Why Use Docker in Docker?
+
+CI/CD Pipelines → Used in tools like GitLab CI, Jenkins, and GitHub Actions for building and testing Docker images.
+
+Containerized Development → Allows users to run Docker commands inside isolated environments.
+
+Sandboxing → Provides an isolated environment to test Docker features.
+
+Multi-Tenant Environments → Each user gets their own Docker daemon.
 
 
 
