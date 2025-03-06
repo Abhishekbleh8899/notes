@@ -5,7 +5,7 @@ git stash
 
 
 
-packer
+ packer
 
 terraform - ec2 vm , vpc , public and private subnet , s3 bucket , loadbalancer 
 		 

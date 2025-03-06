@@ -1,0 +1,181 @@
+node = 1 instance of elasticsearch /server
+
+cluster = collection of elasticsearch nodes for a particular task 
+
+
+HOW DATA IS STORED
+===========================
+
+
+DATA IS STORED IN JSON FORMATE IN ELASTICSEARCH 
+
+when data is stored in elasticsearch along with the data in json format some metadata is also stored 
+
+every keys in json will be started from "_" example = "_index", "_source" ,etc
+
+"_source" = the actual data is stored in this key 
+
+
+document in elasticSearch is equal to rows in SQL
+
+fields in elasticSearch is equal to columns in SQL
+
+index in elasticSearch is equal to tables in SQL
+
+documents are grouped together by indices 
+
+
+
+
+run elasticsearch api through cmd= curl -X GET -k -u elastic:gqrprcfchOdfHWjYOE80 https://localhost:9200/_cluster/health
+
+-k to bypass the certification error 
+-u for providing id pass of elastic search 
+
+
+SHARDING = breaking down the data into more than 1 parts is called as sharding 
+	   sharding is a way to divide indices into smaller pieces 
+SHARDS = the broken parts are called shards 
+	
+sharding is done when your data is large and cannot fit in one node so you break it down and store it in 2 or more nodes 
+sharding is done at index level 
+
+
+REPLICATION
+
+replication = making copy of a shard is called replication
+	      this is done to make the service fault tolerant 
+
+replication group = after replication we will have 2 or more shards of same index , all the shards with same index are grouped together and the group is called replication group 
+		    the original shard will also be in the same replication group 
+		    the original shard will be known as primary shard 
+
+the replicated shards have to be assigned to different nodes other than the original node where the primary shard belongs 
+
+
+
+NODE ROLES
+===================
+
+
+data ----------> shards -------------> nodes
+
+there are different types of nodes 
+
+1.) MASTER NODE = the master node is responsible for lightweight cluster-wide actions such as creating or deleting an index tracking which nodes are part of the cluster, and deciding which shards to allocate to which node 
+ 
+to make a node master just write in the config file of the node = node.master=true
+node.data=false for master node
+
+
+2.) DATA NODE = data nodes holds the shards that contain the documents you have indexed 
+		node.data =true :- this will store the data on that node if node.data=flase
+that node will not store the data
+
+
+3.) ingest = enable to run ingest pipeline
+	    manipulate documents before adding index to them like removing some useless fields or adding some more information
+
+it is just like a simplified version of logstash directly within elasticSearch 
+in case of file beat --> off 
+node.ingest:true/flase
+
+4.) ML role = node.ml=true/false :- if you want to enable/ disable ml jobs use node.ml 
+	      xpack.ml.enabled=true/flase :- if you want to enable / disable ml apis use xpack.ml.enable
+
+5.) coordination role = route queries to other nodes 
+			load balancer
+			doesn't do anything itself
+			do not give any role to make a node coordination node
+
+6.) voting only node = this node only participates in voting for electing a node as master node 	
+	node.voting_only=true/flase
+
+
+
+
+
+CRUD OPERATIONS 
+--------------------------------------------------------------------------------
+
+PUT student   -----------------> creates a index student
+
+---------------------------------------------------------------------------------
+
+POST student/_doc --------------> creates a document inside index student  , id is auto generated
+"name" : "Rahul" ,
+"age" : 35
+---------------------------------------------------------------------------------
+
+POST student/_doc/56786578976 -----------> create a doctument with custom id
+"name" : "Rahul" ,
+"age" : 35
+---------------------------------------------------------------------------------
+
+DELETE student/_doc/56786578976 ----------> delete the document using id 
+
+--------------------------------------------------------------------------
+
+GET student/_doc/56786578976 -------------> fetch the document using id 
+
+----------------------------------------------------------------------------
+
+POST student/_update/56786578976/  --------------> update data of a doc through id (in elastic search when we update somthing it is not updating the data it is replacing the data because 											it is more efficient )
+{
+  "doc" : {
+    "Age" :35
+  }
+}
+------------------------------------------------------------------
+
+GET student/_search   --------------------> search the index 
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+--------------------------------------------------------------------
+
+POST student/_update/k5qTapUBizA-kGnTRDRh/              
+{
+  "script": {                               -----------------------------> scripted update 
+    "source": "ctx._source.Age=37"          -----------------------------> ctx brings the entire document , _source is a key in the document 
+  }
+  }
+}
+
+-------------------------------------------------------------------------
+
+post student/_update/doc id 
+{
+  "script": {
+   "source": "ctx._source.Age=params.new_age",       ------------------------> getting the age value from a variable in params 
+    "params": {
+	"new_age": 12      --------------------------------> creating a variable new_age
+}
+}
+}
+
+------------------------------------------------------------------------------------------------------
+
+POST /student/_update/8_C--IEBbq7bJqSLUMAa               -----------------------------> this doc is deleted , the doc will not be found 
+" script " :{
+"source": "ctx ._source. age++"
+},
+"upsert" :                                             --------------------------------> this will run only after the script fails because 														doc of the specified id is not found , upsert will create a new doc with the specified key and value with the specified id 
+{
+"name" : "Rahul",
+"age" : 35
+}
+}
+
+---------------------------------------------------------------------------------------------------------
+
+
+
+PUT student/_doc/8_C--IEBbq7bJqSLUMAa             ------------------------> this is for replacing a value from the doc 
+{" name" : "Ram" ,
+" age" : 31
+}
+
